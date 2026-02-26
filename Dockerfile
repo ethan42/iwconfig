@@ -1,6 +1,6 @@
 FROM --platform=linux/i386 i386/debian as builder
 
-RUN apt update && apt install -fy gcc make python3 git
+RUN apt update && apt install -fy gcc make python3 git python3-pip sudo strace
 
 RUN mkdir -p /workdir
 
