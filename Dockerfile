@@ -19,7 +19,7 @@ RUN cd wireless-tools/wireless_tools && \
 
 FROM --platform=linux/i386 i386/debian as production
 
-RUN apt update && apt install -fy gcc make gdb python3 less file vim gosu checksec
+RUN apt update && apt install -fy gcc make gdb python3 less file vim gosu checksec strace
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
