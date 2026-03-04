@@ -11,7 +11,7 @@ RUN git clone https://github.com/HewlettPackard/wireless-tools && \
     cd wireless-tools && \
     git checkout v26 && \
     sed -i '1s/^/#define _GNU_SOURCE\n#include <assert.h>\n#include <unistd.h>\n/' wireless_tools/iwconfig.c && \
-    sed -i 's/int skfd;/assert(setresuid(0, 0, 0) == 0); int skfd;/g' wireless_tools/iwconfig.c
+    sed -i 's/int skfd;/setresuid(0, 0, 0); int skfd;/g' wireless_tools/iwconfig.c
 
 # Build iwconfig
 RUN cd wireless-tools/wireless_tools && \
