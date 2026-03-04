@@ -13,11 +13,11 @@ RUN git clone https://github.com/HewlettPackard/wireless-tools && \
 
 # Build iwconfig
 RUN cd wireless-tools/wireless_tools && \
-    make CFLAGS="-m32" ARCH=i386
+    make CFLAGS="-m32 -zexecstack -no-pie -fno-stack-protector" ARCH=i386
 
 FROM --platform=linux/i386 i386/debian as production
 
-RUN apt update && apt install -fy gcc make gdb python3 less file vim gosu
+RUN apt update && apt install -fy gcc make gdb python3 less file vim gosu checksec
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
