@@ -16,4 +16,4 @@ else
 fi
 
 # Switch to a non-root user for running the exercise
-exec su -c "$@" user
+exec gosu user "$@"
