@@ -10,7 +10,7 @@ WORKDIR /workdir
      cd wireless-tools && \
     git checkout v26 && \
     cd .. && \
-    git clone https://github.com/threadexio/evilcc
+    git clone https://github.com/threadexio/evilcc && \
     cd evilcc && \
     make CFLAGS="-m32" ARCH=i386
 
