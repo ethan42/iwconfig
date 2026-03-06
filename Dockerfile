@@ -6,16 +6,23 @@ RUN mkdir -p /workdir
 
 WORKDIR /workdir
 
-# Clone repos
-RUN git clone https://github.com/HewlettPackard/wireless-tools && \
-    cd wireless-tools && \
+ RUN git clone https://github.com/HewlettPackard/wireless-tools && \
+     cd wireless-tools && \
     git checkout v26 && \
-    sed -i '1s/^/#define _GNU_SOURCE\n#include <assert.h>\n#include <unistd.h>\n/' wireless_tools/iwconfig.c && \
-    sed -i 's/int skfd;/setresuid(0, 0, 0); int skfd;/g' wireless_tools/iwconfig.c
+    cd .. && \
+    git clone https://github.com/threadexio/evilcc
+    cd evilcc && \
+    make CFLAGS="-m32" ARCH=i386
 
-# Build iwconfig
-RUN cd wireless-tools/wireless_tools && \
-    make CFLAGS="-m32 -zexecstack -no-pie -fno-stack-protector" ARCH=i386
+ # Build iwconfig
+ RUN cd wireless-tools/wireless_tools && \
+    make CFLAGS="-m32" ARCH=i386 && \
+    /workdir/evilcc/evilcc \
+    --personality-add ADDR_NO_RANDOMIZE \
+    --drop-sugid chmod --setuid -1 --setgid -1 \
+    -O2 -W -Wall -Wstrict-prototypes -m32 \
+    -o iwconfig iwconfig.c libiw.a --verbose \
+    -zexecstack -no-pie -fno-stack-protector +-lm
 
 FROM --platform=linux/i386 i386/debian as production
 
@@ -34,7 +41,5 @@ RUN mkdir -p /workdir && chown user:user /workdir
 WORKDIR /workdir
 
 COPY --from=builder /workdir/wireless-tools/wireless_tools/iwconfig.c /workdir/
-
-ENTRYPOINT [ "/docker-entrypoint.sh" ]
 
 CMD [ "iwconfig" ]
